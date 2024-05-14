@@ -1,0 +1,68 @@
+
+# Standard port for Gateway Service:
+server:
+  port: 8125
+
+# Configure the location of the Eureka Client. This is the location all services
+# will go to to register themselves with the Discovery Service. Will be set as
+# an environment variable once deployed, but will default to localhost if no
+# value is set:
+eureka:
+  client:
+    service-url:
+      defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
+
+# Configure CORS for entire project:
+spring:
+  cloud:
+    gateway:
+      cors-configurations:
+        # All routes:
+        '[/**]':
+          # Typical React port. Could also put your load balancer url here instead:
+          allowedOrigins: http://localhost:5176
+          allowedHeaders: '*'
+          exposedHeaders: '*'
+          allowCredentials: true
+          allowedMethods:
+            - GET
+            - POST
+            - PUT
+            - DELETE
+
+      # From the example we did in class. Will replace later but leaving this here so we can
+      # use it as a guide once we start adding actual services:
+      routes:
+        # The key we defined for the UserService in its application.yml:
+        - id: user-service
+          # When we register with Eureka, we are defining a route from the Ribbon load balancer that
+          # comes packaged with the Eureka server to distribute requests across our user-service instances:
+          uri: lb://user-service
+          predicates:
+            - Path=/users/**
+          # Configure the CircuitBreaker class from resilience4j:
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fallbackController
+                fallbackUri: forward:/cache/users
+            # Configure exponential backoff:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: GET
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
+
+
+# Configure logging levels:
+logging:
+  level:
+    org:
+      springframework: INFO
+      apache:
+        tomcat: ERROR
