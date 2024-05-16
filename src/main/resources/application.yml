@@ -20,7 +20,7 @@ spring:
         # All routes:
         '[/**]':
           # Typical React port. Could also put your load balancer url here instead:
-          allowedOrigins: http://localhost:5176
+          allowedOrigins: ${FRONTEND_URL:http://localhost:5176}
           allowedHeaders: '*'
           exposedHeaders: '*'
           allowCredentials: true
