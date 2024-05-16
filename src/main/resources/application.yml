@@ -58,6 +58,28 @@ spring:
                   factor: 2
                   basedOnPreviousValue: false
 
+        # Tax Service:
+        - id: tax-service
+          uri: lb://tax-service
+            - Path=/taxes/**
+          # Tax Service CircuitBreaker:
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fallbackController
+                fallbackUri: forward:/cache/taxes
+            # Tax Service backoff:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: GET
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
+
 
 # Configure logging levels:
 logging:
