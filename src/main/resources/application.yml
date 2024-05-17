@@ -61,6 +61,7 @@ spring:
         # Tax Service:
         - id: tax-service
           uri: lb://tax-service
+          predicates:
             - Path=/taxes/**
           # Tax Service CircuitBreaker:
           filters:
