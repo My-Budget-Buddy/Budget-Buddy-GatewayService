@@ -89,5 +89,7 @@ logging:
   level:
     org:
       springframework: INFO
-      apache:
-        tomcat: ERROR
+    io:
+      netty: ERROR
+    reactor:
+      netty: ERROR
