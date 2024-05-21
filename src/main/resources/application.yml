@@ -161,7 +161,7 @@ spring:
         - id: budget-service
           uri: lb://budget-service
           predicates:
-            - Path=/budgets/**, /buckets/**
+            - Path=/budgets/**, /buckets/**, /summarys/**
           # Budget Service Filter and CircuitBreaker
           filters:
             # - name: AuthenticationFilter
