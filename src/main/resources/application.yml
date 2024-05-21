@@ -44,6 +44,7 @@ spring:
             - Path=/users/**
           # Configure the CircuitBreaker class from resilience4j:
           filters:
+            # - name: AuthenticationFilter # Checks the JWT for every request sent to this service
             - name: CircuitBreaker
               args:
                 name: fallbackController
@@ -65,8 +66,9 @@ spring:
           uri: lb://tax-service
           predicates:
             - Path=/taxes/**
-          # Tax Service CircuitBreaker:
+          # Tax Service Filter and CircuitBreaker:
           filters:
+            # - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: fallbackController
@@ -82,6 +84,103 @@ spring:
                   maxBackoff: 50ms
                   factor: 2
                   basedOnPreviousValue: false
+
+        # Auth Service
+        - id: auth-service
+          uri: lb://auth-service
+          predicates: 
+            - Path=/auth/**
+          # Auth Service Filter and CircuitBreaker
+          filters: 
+            # - name: AuthenticationFilter
+            - name: CircuitBreaker
+              args: 
+                name: fallbackController
+                fallbackUri: forward:/cache/auth
+            # Auth Service backoff:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: GET
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
+
+        # Transaction Service
+        - id: transaction-service
+          uri: lb://transaction-service
+          predicates:
+            - Path=/transactions/**
+          # Transaction Service Filter and CircuitBreaker
+          filters:
+            # - name: AuthenticationFilter
+            - name: CircuitBreaker
+              args:
+                name: fallbackController
+                fallbackUri: forward:/cache/transactions
+            # Transaction Service backoff:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: GET
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
+
+        # Account Service:
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/accounts/**
+          # Account Service CircuitBreaker and Filter
+          filters:
+            # - name: AuthenticationFilter
+            - name: CircuitBreaker
+              args: 
+                name: fallbackController
+                fallbackUri: forward:/cache/accounts
+            # Account Service backoff:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: GET
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
+
+        # Budget Service:
+        - id: budget-service
+          uri: lb://budget-service
+          predicates:
+            - Path=/budgets/**, /buckets/**
+          # Budget Service Filter and CircuitBreaker
+          filters:
+            # - name: AuthenticationFilter
+            - name: CircuitBreaker
+              args:
+                name: fallbackController
+                fallbackUri: forward:/cache/budgets
+            # Budget Service backoff:
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: GET
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
+
 
 
 # Configure logging levels:
