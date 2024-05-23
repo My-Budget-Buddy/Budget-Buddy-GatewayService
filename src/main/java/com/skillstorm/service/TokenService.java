@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class TokenService {
     
-    @Autowired
     private JwtDecoder jwtDecoder;
 
     public Jwt decodeJwt(String token) {
