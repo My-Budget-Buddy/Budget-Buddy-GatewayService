@@ -1,32 +1,21 @@
 package com.skillstorm.filter;
 
-import com.netflix.discovery.converters.Auto;
 import com.skillstorm.model.JwtValidationDto;
 import org.apache.hc.core5.http.HttpHeaders;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.cloud.client.loadbalancer.LoadBalancerClient;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
-import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.server.ServerWebExchange;
 
 import java.util.List;
-import java.util.Objects;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
-
-    // @Autowired
-    // private LoadBalancerClient loadBalancerClient;
 
     private final RouteValidator validator;
     private final DiscoveryClient discoveryClient;
@@ -41,14 +30,10 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
     }
 
     // Used to send Http Request to auth server
-    RestClient restClient = RestClient.builder()
-            // .baseUrl("http://auth-service/auth")
-            .build();
+    RestClient restClient = RestClient.builder().build();
 
     @Override
     public GatewayFilter apply(Config config) {
-        // ServiceInstance instance = loadBalancerClient.choose("auth-service");
-
         List<ServiceInstance> instances = discoveryClient.getInstances("auth-service");
         ServiceInstance instance = instances
                 .stream().findAny()
