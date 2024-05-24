@@ -1,11 +1,9 @@
-FROM eclipse-temurin:17-jre-alpine
-
-RUN apk update && apk upgrade
-      
+FROM 924809052459.dkr.ecr.us-east-1.amazonaws.com/maven as build
 WORKDIR /app
-      
-COPY target/*.jar /app/app.jar
-      
-EXPOSE 8125
-      
-CMD ["java", "-jar", "app.jar"]
+COPY . /app
+RUN mvn clean install -DskipTests
+
+FROM 924809052459.dkr.ecr.us-east-1.amazonaws.com/java17
+WORKDIR /app
+COPY --from=build /app/target/*.jar /app/app.jar
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
