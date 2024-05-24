@@ -15,6 +15,9 @@ eureka:
 spring:
   application:
     name: gateway
+  output:
+    ansi:
+      enabled: ALWAYS
   cloud:
     gateway:
       globalcors:
@@ -44,7 +47,8 @@ spring:
             - Path=/users/**
           # Configure the CircuitBreaker class from resilience4j:
           filters:
-            # - name: AuthenticationFilter # Checks the JWT for every request sent to this service
+            # Checks the JWT for every request sent to this service
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: fallbackController
@@ -68,7 +72,7 @@ spring:
             - Path=/taxes/**
           # Tax Service Filter and CircuitBreaker:
           filters:
-            # - name: AuthenticationFilter
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: fallbackController
@@ -92,7 +96,7 @@ spring:
             - Path=/auth/**
           # Auth Service Filter and CircuitBreaker
           filters:
-            # - name: AuthenticationFilter
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: fallbackController
@@ -116,7 +120,7 @@ spring:
             - Path=/transactions/**
           # Transaction Service Filter and CircuitBreaker
           filters:
-            # - name: AuthenticationFilter
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: fallbackController
@@ -140,7 +144,7 @@ spring:
             - Path=/accounts/**
           # Account Service CircuitBreaker and Filter
           filters:
-            # - name: AuthenticationFilter
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: fallbackController
@@ -164,7 +168,7 @@ spring:
             - Path=/budgets/**, /buckets/**, /summarys/**
           # Budget Service Filter and CircuitBreaker
           filters:
-            # - name: AuthenticationFilter
+            - name: AuthenticationFilter
             - name: CircuitBreaker
               args:
                 name: fallbackController
