@@ -1,6 +1,6 @@
-FROM eclipse-temurin:17-jre-alpine
+FROM alpine:latest
 
-RUN apk update && apk upgrade
+RUN apk update && apk upgrade && apk add openjdk17-jre
       
 WORKDIR /app
       
