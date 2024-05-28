@@ -1,9 +1,10 @@
-FROM 924809052459.dkr.ecr.us-east-1.amazonaws.com/maven as build
+FROM public.ecr.aws/c1x4i8c4/alpine:latest as build
 WORKDIR /app
 COPY . /app
-RUN mvn clean install -DskipTests
+RUN apk update && apk upgrade && apk add openjdk17-jdk maven && mvn clean package -DskipTests
 
-FROM 924809052459.dkr.ecr.us-east-1.amazonaws.com/java17
+FROM public.ecr.aws/c1x4i8c4/alpine:latest
+RUN apk update && apk upgrade && apk add openjdk17-jre
 WORKDIR /app
 COPY --from=build /app/target/*.jar /app/app.jar
 ENTRYPOINT ["java", "-jar", "/app/app.jar"]

@@ -11,21 +11,24 @@ phases:
       - curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
       - chmod +x kubectl
       - mv kubectl /usr/local/bin/
-      - aws eks update-kubeconfig --name $CLUSTER_NAME
+      - curl -sLO "https://github.com/eksctl-io/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz"
+      - tar -xzf eksctl_Linux_amd64.tar.gz -C /usr/local/bin && rm eksctl_Linux_amd64.tar.gz
       - ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - REPOSITORY_NAME=gateway-service
   build:
     commands:
       - echo Entered the build phase...
       - echo Building the project...
-      - mvn clean install
+      - mvn clean package -DskipTests
       - echo Finished the build phase.
   post_build:
     commands:
       - mv target/*.jar target/app.jar
       - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com
-      - docker build -t $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_NAME
+      - docker build -t $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_NAME .
       - docker push $ACCOUNT_ID.dkr.ecr.us-east-1.amazonaws.com/$REPOSITORY_NAME
-      - kubectl apply -f manifest.yaml
+      #- kubectl apply -f manifest.yaml
+      - eksctl utils write-kubeconfig --cluster=$CLUSTER_NAME
       - kubectl rollout restart deployment $REPOSITORY_NAME
       - echo Finished the post_build phase.
 
