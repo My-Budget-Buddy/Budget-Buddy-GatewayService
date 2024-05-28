@@ -7,7 +7,6 @@ import com.skillstorm.model.JwtValidationDto;
 import reactor.core.publisher.Mono;
 
 import org.apache.hc.core5.http.HttpHeaders;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
@@ -25,14 +24,6 @@ import java.util.List;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
-
-    // Another way to further secure requests is to share a secret between services
-    // and the gateway
-    // each service on each request will make sure the secret sent in the request
-    // headers, match the
-    // shared secret
-    @Value("${GATEWAY-SECRET}")
-    private String gatewaySecret;
 
     private final RouteValidator validator;
     private final DiscoveryClient discoveryClient;
@@ -99,7 +90,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     ServerHttpRequest modifiedRequest = exchange.getRequest()
                             .mutate()
                             .header("User-ID", tokenUserId)
-                            .header("GATEWAY-SECRET", gatewaySecret)
                             .build();
                     exchange = exchange.mutate().request(modifiedRequest).build();
 
