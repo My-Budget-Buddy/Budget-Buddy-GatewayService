@@ -7,6 +7,8 @@ server:
 # an environment variable once deployed, but will default to localhost if no
 # value is set:
 eureka:
+  instance:
+    hostname: ${AWS_HOSTNAME:localhost}
   client:
     service-url:
       defaultZone: ${EUREKA_URL:http://localhost:8761/eureka}
