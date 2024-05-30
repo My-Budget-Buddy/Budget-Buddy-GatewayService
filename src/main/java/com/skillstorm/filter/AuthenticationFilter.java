@@ -1,6 +1,7 @@
 package com.skillstorm.filter;
 
 import com.skillstorm.exceptions.AuthServiceUnavailableException;
+import com.skillstorm.exceptions.IncorrectAuthorizationHeaderException;
 import com.skillstorm.exceptions.MissingAuthorizationHeaderException;
 import com.skillstorm.model.JwtValidationDto;
 
@@ -59,8 +60,11 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                     // Verify that an Authorization header exists with a Bearer JWT
                     String authHeader = request.getHeaders().get(HttpHeaders.AUTHORIZATION).get(0);
+
                     if (authHeader != null && authHeader.startsWith("Bearer ")) {
                         authHeader = authHeader.substring(7);
+                    } else {
+                        throw new IncorrectAuthorizationHeaderException();
                     }
 
                     // Send HttpRequest to Auth server in order to validate JWT
