@@ -115,6 +115,14 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                             .wrap("Unauthorized: Missing Authorization Header.".getBytes());
 
                     return exchange.getResponse().writeWith(Mono.just(buffer));
+                } catch (IncorrectAuthorizationHeaderException e) {
+                    // Return a 401 Unauthorized no JWT was sent, previously returned 500 server err
+                    exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+                    exchange.getResponse().getHeaders().setContentType(MediaType.TEXT_PLAIN);
+                    DataBuffer buffer = exchange.getResponse().bufferFactory()
+                            .wrap("Unauthorized: Incorrect Authorization Header.".getBytes());
+
+                    return exchange.getResponse().writeWith(Mono.just(buffer));
                 }
 
             }
