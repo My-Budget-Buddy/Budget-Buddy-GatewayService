@@ -10,38 +10,38 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/cache")
 public class FallbackController {
 
-    @GetMapping("/users")
+    @RequestMapping("/users")
     public ResponseEntity<String> cachedUsers() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("User service is currently unavailable, please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("User service is currently unavailable. Please try again later.");
     }
 
-    @GetMapping("/taxes")
+    @RequestMapping("/taxes")
     public ResponseEntity<String> cachedTaxes() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Tax service is currently unavailable, please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Tax service is currently unavailable. Please try again later.");
     }
 
-    @GetMapping("/auth")
+    @RequestMapping("/auth")
     public ResponseEntity<String> cachedAuth() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Authorization service is currently unavailable, please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Authorization service is currently unavailable. Please try again later.");
     }
 
-    @GetMapping("/transactions")
+    @RequestMapping("/transactions")
     public ResponseEntity<String> cachedTransactions() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Transaction service is currently unavailable, please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Transaction service is currently unavailable. Please try again later.");
     }
 
-    @GetMapping("/accounts")
+    @RequestMapping("/accounts")
     public ResponseEntity<String> cachedAccounts() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Account service is currently unavailable, please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Account service is currently unavailable. Please try again later.");
     }
 
-    @GetMapping("/budgets")
+    @RequestMapping("/budgets")
     public ResponseEntity<String> cachedBudgets() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Budget service is currently unavailable, please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Budget service is currently unavailable. Please try again later.");
     }
 
-    @GetMapping("/credit")
+    @RequestMapping("/credit")
     public ResponseEntity<String> cachedCredit() {
-        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Credit service is currently unavailable, please try again later.");
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Credit service is currently unavailable. Please try again later.");
     }
 }
