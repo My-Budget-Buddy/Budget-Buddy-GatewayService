@@ -186,7 +186,7 @@ spring:
                   maxBackoff: 50ms
                   factor: 2
                   basedOnPreviousValue: false
-        
+
         - id: tax-demo
           uri: lb://tax-demo
           predicates:
@@ -197,6 +197,25 @@ spring:
               args:
                 name: fallbackController
                 fallbackUri: forward:/cache/credit
+            - name: Retry
+              args:
+                retries: 3
+                statuses: BAD_GATEWAY
+                methods: GET
+                backoff:
+                  firstBackoff: 10ms
+                  maxBackoff: 50ms
+                  factor: 2
+                  basedOnPreviousValue: false
+        - id: plaid-service
+          uri: lb://plaid-service
+          predicates:
+            - Path=/plaid/**
+          filters:
+            - name: CircuitBreaker
+              args:
+                name: fallbackController
+                fallbackUri: forward:/cache/plaid
             - name: Retry
               args:
                 retries: 3
