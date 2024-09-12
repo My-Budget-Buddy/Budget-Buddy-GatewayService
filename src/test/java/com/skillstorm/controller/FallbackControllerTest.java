@@ -1,12 +1,10 @@
 package com.skillstorm.controller;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
-
 
 import com.skillstorm.controllers.FallbackController;
 
@@ -23,7 +21,7 @@ public class FallbackControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isEqualTo(503) // Corrected to check for 503 Service Unavailable
-            .expectBody(String.class).isEqualTo("User service is currently unavailable. Please try again later.");
+            .expectBody(String.class).isEqualTo("User service is currently unavailable, please try again later.");
     }
     @Test
     public void testCachedTaxes() {
@@ -31,7 +29,7 @@ public class FallbackControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isEqualTo(503)  // Expect 503 for Service Unavailable
-            .expectBody(String.class).isEqualTo("Tax service is currently unavailable. Please try again later.");
+            .expectBody(String.class).isEqualTo("Tax service is currently unavailable, please try again later.");
     }
     @Test
     public void testCachedAuth() {
@@ -39,7 +37,7 @@ public class FallbackControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isEqualTo(503)  // Expect 503 for Service Unavailable
-            .expectBody(String.class).isEqualTo("Authorization service is currently unavailable. Please try again later.");
+            .expectBody(String.class).isEqualTo("Authorization service is currently unavailable, please try again later.");
     }
     @Test
     public void testCachedTransactions() {
@@ -47,7 +45,7 @@ public class FallbackControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isEqualTo(503)  // Expect 503 for Service Unavailable
-            .expectBody(String.class).isEqualTo("Transaction service is currently unavailable. Please try again later.");
+            .expectBody(String.class).isEqualTo("Transaction service is currently unavailable, please try again later.");
     }
     @Test
     public void testCachedAccounts() {
@@ -55,7 +53,7 @@ public class FallbackControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isEqualTo(503)  // Expect 503 for Service Unavailable
-            .expectBody(String.class).isEqualTo("Account service is currently unavailable. Please try again later.");
+            .expectBody(String.class).isEqualTo("Account service is currently unavailable, please try again later.");
     }
     @Test
     public void testCachedBudgets() {
@@ -63,7 +61,7 @@ public class FallbackControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isEqualTo(503)  // Expect 503 for Service Unavailable
-            .expectBody(String.class).isEqualTo("Budget service is currently unavailable. Please try again later.");
+            .expectBody(String.class).isEqualTo("Budget service is currently unavailable, please try again later.");
     }
     @Test
     public void testCachedCredit() {
@@ -71,6 +69,6 @@ public class FallbackControllerTest {
             .accept(MediaType.APPLICATION_JSON)
             .exchange()
             .expectStatus().isEqualTo(503)  // Expect 503 for Service Unavailable
-            .expectBody(String.class).isEqualTo("Credit service is currently unavailable. Please try again later.");
+            .expectBody(String.class).isEqualTo("Credit service is currently unavailable, please try again later.");
     }
 }
