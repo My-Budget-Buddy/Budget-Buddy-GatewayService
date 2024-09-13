@@ -1,10 +1,6 @@
 package com.skillstorm.filter;
 
-import com.skillstorm.exceptions.AuthServiceUnavailableException;
-import com.skillstorm.exceptions.MissingAuthorizationHeaderException;
-import com.skillstorm.model.JwtValidationDto;
-
-import reactor.core.publisher.Mono;
+import java.util.List;
 
 import org.apache.hc.core5.http.HttpHeaders;
 import org.springframework.cloud.client.ServiceInstance;
@@ -20,7 +16,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
-import java.util.List;
+import com.skillstorm.exceptions.AuthServiceUnavailableException;
+import com.skillstorm.exceptions.MissingAuthorizationHeaderException;
+import com.skillstorm.model.JwtValidationDto;
+
+import reactor.core.publisher.Mono;
 
 @Component
 public class AuthenticationFilter extends AbstractGatewayFilterFactory<AuthenticationFilter.Config> {
@@ -54,6 +54,7 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     ServerHttpRequest request = exchange.getRequest();
 
                     if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
+                        System.out.println("No Authorization header found");
                         throw new MissingAuthorizationHeaderException();
                     }
 

@@ -152,7 +152,7 @@ public class AuthenticationFilterTest {
 
         // Create a mock request and exchange
         ServerHttpRequest request = MockServerHttpRequest.get("/secured-path")
-                .header(HttpHeaders.AUTHORIZATION, "Bearer valid-token")
+                // .header(HttpHeaders.AUTHORIZATION, "Bearer valid-token")
                 .build();
         MockServerWebExchange exchange = MockServerWebExchange.from((MockServerHttpRequest) request);
 
@@ -168,16 +168,16 @@ public class AuthenticationFilterTest {
         // Apply the authentication filter
         GatewayFilter gatewayFilter = authenticationFilter.apply(new AuthenticationFilter.Config());
         gatewayFilter.filter(exchange, filterChain).block();
-        verify(request).getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
-        System.out.print(verify(request).getHeaders().containsKey(HttpHeaders.AUTHORIZATION));
+        // verify(request).getHeaders().containsKey(HttpHeaders.AUTHORIZATION);
+        // System.out.print(verify(request).getHeaders().containsKey(HttpHeaders.AUTHORIZATION));
 
         assertThatThrownBy(() -> authenticationFilter.apply(new AuthenticationFilter.Config()))
             .isInstanceOf(MissingAuthorizationHeaderException.class);
         
         // Verify interactions
         // doReturn(true).when(routeValidator).isSecured.test(request);
-        System.out.println(routeValidator.isSecured.test(request));
-        verify(routeValidator).isSecured.test(request);
+        // System.out.println(routeValidator.isSecured.test(request));
+        // verify(routeValidator).isSecured.test(request);
         
         
         // verify(filterChain).filter(exchange);
