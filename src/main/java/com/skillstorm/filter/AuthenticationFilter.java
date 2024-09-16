@@ -66,16 +66,20 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                     // Send HttpRequest to Auth server in order to validate JWT
                     if (instance == null) {
+                        System.out.println("got to this point!");
                         throw new AuthServiceUnavailableException();
                     }
-
+                    
+                    System.out.println("Now attempting to get JWT validation from auth server");
                     String serviceUrl = instance.getUri().toString().concat("/auth/validate");
+
+                    System.out.println("concat the string now time to use the rest client");
                     ResponseEntity<JwtValidationDto> response = restClient.get()
                             .uri(serviceUrl)
                             .header("Authorization", "Bearer " + authHeader)
                             .retrieve()
                             .toEntity(JwtValidationDto.class);
-
+                    System.out.println("made the response, let's see what happens");
                     if (response.getStatusCode() == HttpStatus.UNAUTHORIZED) {
                         throw new RuntimeException("Unable to validate Jwt");
                     }
