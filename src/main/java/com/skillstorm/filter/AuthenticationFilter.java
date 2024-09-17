@@ -54,7 +54,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
                     ServerHttpRequest request = exchange.getRequest();
 
                     if (!request.getHeaders().containsKey(HttpHeaders.AUTHORIZATION)) {
-                        System.out.println("No Authorization header found");
                         throw new MissingAuthorizationHeaderException();
                     }
 
@@ -66,7 +65,6 @@ public class AuthenticationFilter extends AbstractGatewayFilterFactory<Authentic
 
                     // Send HttpRequest to Auth server in order to validate JWT
                     if (instance == null) {
-                        System.out.println("got to this point!");
                         throw new AuthServiceUnavailableException();
                     }
                     
