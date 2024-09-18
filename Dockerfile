@@ -1,12 +1,9 @@
-FROM alpine:latest
-
-RUN apk update && apk upgrade
-RUN apk add --no-cache openjdk17-jre
-
+FROM 924809052459.dkr.ecr.us-east-1.amazonaws.com/maven as build
 WORKDIR /app
+COPY . /app
+RUN mvn clean install -DskipTests
 
-COPY target/*.jar /app/app.jar
-
-EXPOSE 8125
-
-CMD ["java", "-jar", "app.jar"]
+FROM 924809052459.dkr.ecr.us-east-1.amazonaws.com/java17
+WORKDIR /app
+COPY --from=build /app/target/*.jar /app/app.jar
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
