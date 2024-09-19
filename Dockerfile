@@ -1,8 +1,11 @@
-FROM maven:3.8.3-amazoncorretto-17 as build
-WORKDIR /app
-COPY . /app
-RUN mvn clean install -DskipTests
-
-FROM openjdk:17
-WORKDIR /app
-COPY --from=build /app/target/*.jar /app/app.jar
+FROM alpine:latest
+  
+  RUN apk update && apk upgrade && apk add openjdk17-jre
+  
+  WORKDIR /app
+        
+  COPY target/*.jar /app/app.jar
+        
+  EXPOSE 8125
+        
+  CMD ["java", "-jar", "app.jar"]
