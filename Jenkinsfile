@@ -86,7 +86,7 @@ pipeline {
                   echo "Failed to get ECR login password"
                   exit 1
                 fi
-                /kaniko/executor --dockerfile=Dockerfile --context=dir://. --destination=924809052459.dkr.ecr.us-east-1.amazonaws.com/gateway-service:latest
+                /kaniko/executor --dockerfile=Dockerfile.prod --context=dir://. --destination=924809052459.dkr.ecr.us-east-1.amazonaws.com/gateway-service:latest
               '''
         }
       }
