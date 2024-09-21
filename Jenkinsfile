@@ -260,6 +260,7 @@ pipeline {
             sed -i 's|<db-url>|jdbc:****ql://${SERVICE_NAME}-postgres.${NAMESPACE}.svc.cluster.local:5432/my_budget_buddy/|' deployment-${SERVICE_NAME}.yaml
 
             # set eureka URL
+            echo ${EUREKA_URL}
             sed -i 's|<eureka-url>|$EUREKA_URL|' deployment-${SERVICE_NAME}.yaml
 
             # reapply
