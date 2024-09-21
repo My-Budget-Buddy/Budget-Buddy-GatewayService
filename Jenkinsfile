@@ -81,7 +81,7 @@ pipeline {
         SERVICE_NAME = 'gateway-service'
         PASCAL_SERVICE_NAME = 'GatewayService'
         NAMESPACE = 'staging'
-        EUREKA_URL = 'http://gateway-service.staging.svc.cluster.local:8761/eureka'
+        EUREKA_URL = 'http://discovery-service.staging.svc.cluster.local:8761/eureka'
     }
 
     stages {
@@ -261,7 +261,7 @@ pipeline {
 
             # set eureka URL
             echo ${EUREKA_URL}
-            sed -i 's|<eureka-url>|$EUREKA_URL|' deployment-${SERVICE_NAME}.yaml
+            sed -i 's|<eureka-url>|http://discovery-service.staging.svc.cluster.local:8761/eureka|' deployment-${SERVICE_NAME}.yaml
 
             # reapply
 
