@@ -234,6 +234,7 @@ pipeline {
             }
         }
 
+//ASDFASDFASDFAS
     // after this stage, the operative app is deployed to the staging EKS cluster
     // and should be ready for testing on the staging eks
     stage('Deploy to Staging EKS') {
