@@ -263,7 +263,7 @@ pipeline {
             # set eureka URL
             echo ${EUREKA_URL}
             export MY_EUREKA_URL=${EUREKA_URL}
-            sed -i 's|<eureka-url>|$MY_EUREKA_URL|' deployment-${SERVICE_NAME}.yaml
+            sed -i 's|<eureka-url>|http://discovery-service.staging.svc.cluster.local:8761/eureka|' deployment-${SERVICE_NAME}.yaml
 
             # reapply
 
