@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 import java.net.URI;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -22,6 +23,7 @@ class RouteValidatorTest {
         routeValidator = new RouteValidator();
         mockRequest = mock(ServerHttpRequest.class);
     }
+
 
     @Test
     void testIsSecuredForOpenApiEndpoints() {
