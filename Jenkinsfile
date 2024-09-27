@@ -69,11 +69,12 @@ pipeline {
   }
 
   options {
-    buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '30'))
+    buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
   }
 
   environment {
       SERVICE_NAME = 'gateway-service'
+      SERVICE_ROUTE = 'gateway'
       PASCAL_SERVICE_NAME = 'GatewayService'
       CLIENT_ID = credentials('GITHUB_APP_CLIENT_ID')
       PEM = credentials('GITHUB_APP_PEM')
@@ -101,7 +102,8 @@ pipeline {
           steps{
             sh '''
             git clone https://github.com/My-Budget-Buddy/Budget-Buddy-Kubernetes.git
-            git clone -b testing-cohort-dev https://github.com/My-Budget-Buddy/Budget-Buddy-Frontend-Testing.git
+            git clone https://github.com/My-Budget-Buddy/Budget-Buddy-Frontend-Testing.git
+            git clone https://github.com/My-Budget-Buddy/Budget-Buddy-PerformanceTests.git
             '''
           }
       }
@@ -151,9 +153,9 @@ pipeline {
           steps {
               container('maven') {
                   withCredentials([
-                  string(credentialsId: 'STAGING_DATABASE_URL', variable: 'DATABASE_URL'),
-                  string(credentialsId: 'STAGING_DATABASE_USER', variable: 'DATABASE_USER'),
-                  string(credentialsId: 'STAGING_DATABASE_PASSWORD', variable: 'DATABASE_PASS')])
+                    string(credentialsId: 'STAGING_DATABASE_URL', variable: 'DATABASE_URL'),
+                    string(credentialsId: 'STAGING_DATABASE_USER', variable: 'DATABASE_USER'),
+                    string(credentialsId: 'STAGING_DATABASE_PASSWORD', variable: 'DATABASE_PASS')])
                   {
                       sh '''
                           mvn clean verify -Pcoverage -Dspring.profiles.active=test \
@@ -243,8 +245,29 @@ pipeline {
               }
           }
       }
+      
+    stage('Reset Database for Functional Tests') {
+        when {
+            branch 'testing-cohort'
+        }
+        steps {
+            container('aws-kubectl') {
+            withCredentials([
+                string(credentialsId: 'STAGING_DATABASE_USER', variable: 'DATABASE_USERNAME'),
+                string(credentialsId: 'STAGING_DATABASE_PASSWORD', variable: 'DATABASE_PASSWORD')]) {
+                sh '''
+                aws eks --region us-east-1 update-kubeconfig --name project3-eks
+                # deploy staging db
+                cd Budget-Buddy-Kubernetes/Databases
+                chmod +x ./deploy-database.sh
+                ./deploy-database.sh ${NAMESPACE} $DATABASE_USERNAME $DATABASE_PASSWORD
+                '''
+                }
+            }
+        }
+    }
 
-      stage('Selenium/Cucumber Tests'){
+    stage('Selenium/Cucumber Tests'){
         when {
             branch 'testing-cohort'
         }
@@ -300,7 +323,7 @@ pipeline {
                     withCredentials([string(credentialsId: 'CUCUMBER_TOKEN', variable: 'CUCUMBER_TOKEN')]) {
                         sh '''
                             cd Budget-Buddy-Frontend-Testing/cucumber-selenium-tests
-                            mvn test -Dheadless=true -Dcucumber.publish.token=${CUCUMBER_TOKEN} -Dmaven.test.failure.ignore=true -DfrontendUrl=https://staging.frontend.skillstorm-congo.com
+                            mvn test -Dheadless=true -Dcucumber.publish.token=${CUCUMBER_TOKEN} -DfrontendUrl=https://staging.frontend.skillstorm-congo.com -Dmaven.test.failure.ignore=true
                         '''
                     }
                 }
@@ -308,7 +331,54 @@ pipeline {
         }
     }
 
-    // add performance tests
+    stage('Reset Database for Performance Tests') {
+      when {
+        branch 'testing-cohort'
+      }
+      steps {
+        container('aws-kubectl') {
+          withCredentials([
+            string(credentialsId: 'STAGING_DATABASE_USER', variable: 'DATABASE_USERNAME'),
+            string(credentialsId: 'STAGING_DATABASE_PASSWORD', variable: 'DATABASE_PASSWORD')]) {
+            sh '''
+              aws eks --region us-east-1 update-kubeconfig --name project3-eks
+              # deploy staging db
+              cd Budget-Buddy-Kubernetes/Databases
+              chmod +x ./deploy-database.sh
+              ./deploy-database.sh ${NAMESPACE} $DATABASE_USERNAME $DATABASE_PASSWORD
+            '''
+          }
+        }
+      }
+    }
+
+    stage('Performance Test for Staging') {
+      when {
+        branch 'testing-cohort'
+      }
+      steps {
+        sh '''
+            TRIES_REMAINING=16
+
+            echo 'Waiting for frontend to be ready...'
+            while ! curl --output /dev/null --silent https://staging.api.skillstorm-congo.com/${SERVICE_ROUTE}; do
+                TRIES_REMAINING=$((TRIES_REMAINING - 1))
+                if [ $TRIES_REMAINING -le 0 ]; then
+                    echo "***Service is ready***"
+                    exit 1
+                    fi
+                done
+            '''
+        container("aws-kubectl") {
+            bzt "Budget-Buddy-PerformanceTests/0-stepping.yaml"
+            bzt "Budget-Buddy-PerformanceTests/1-stepping.yaml"
+            bzt "Budget-Buddy-PerformanceTests/2-stepping.yaml"
+            bzt "Budget-Buddy-PerformanceTests/3-stepping.yaml"
+            archiveArtifacts artifacts: '*/**.jtl', allowEmptyArchive: true
+        }
+      
+      }
+    }
 
     // Deploy the service to EKS for production
     stage('Deploy to EKS for Production') {
@@ -346,8 +416,6 @@ pipeline {
           }
       }
   }
-
-  // --- POST PIPELINE ---
 
   post {
     always {
